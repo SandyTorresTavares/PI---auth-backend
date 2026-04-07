@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import register from "../services/service";
+import { register, login } from "../services/service";
 
 const registerUser = async (req: Request, res: Response) => {
     const { name, email, password } = req.body;
@@ -17,3 +17,20 @@ const registerUser = async (req: Request, res: Response) => {
 }
 
 export default registerUser;
+
+const loginUser = async (req: Request, res: Response) => {
+    const { email, password } = req.body;
+
+    if(!email || !password){
+        return res.status(400).json({ error: "Preencha todos os campos" });
+    }
+
+    try {
+        const token = await login({ email, password });
+        return res.status(200).json({ token });
+    } catch (error: any){
+        return res.status(400).json({message: error.message});
+    }
+}
+
+export { loginUser };

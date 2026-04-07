@@ -1,3 +1,4 @@
+import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { findUserByEmail, createUser } from "../repositories/repository";
 
@@ -7,7 +8,7 @@ interface RegisterData {
     password: string;
 }
 
-export default async function register(data: RegisterData) {
+export async function register(data: RegisterData) {
     const {name, email, password} = data;
 
     const existingUser = await findUserByEmail(email);
@@ -23,4 +24,24 @@ export default async function register(data: RegisterData) {
         email, 
         password: hashPassword
     });
+}
+
+export async function login(data: Omit<RegisterData, 'name'>) {
+    const { email, password } = data;
+
+    const user = await findUserByEmail(email);
+
+    if (!user) {
+        throw new Error('Usuário não encontrado');
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+        throw new Error('Senha incorreta');
+    }
+
+    const token = jwt.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET as string, { expiresIn: '1h' });
+
+    return token; 
 }
