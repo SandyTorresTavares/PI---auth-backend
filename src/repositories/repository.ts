@@ -8,11 +8,11 @@ export async function findUserByEmail(email: string){
     return row.length ? row [0] : null;
 }
 
-export async function createUser(user: {name: string, email: string, password: string}){
+export async function createUser(user: {name: string, email: string, password: string, role?: string}){
 
-    const {name, email, password} = user;
+    const {name, email, password, role = 'aluno'} = user;
     const [result] = await connection.query<ResultSetHeader>(
-        'INSERT INTO user (name, email, password) VALUES (?, ?, ?)', [name, email, password]
+        'INSERT INTO user (name, email, password, role) VALUES (?, ?, ?, ?)', [name, email, password, role]
     );
 
     return;

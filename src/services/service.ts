@@ -6,10 +6,11 @@ interface RegisterData {
     name: string;
     email: string;
     password: string;
+    role?: 'professor' | 'aluno';
 }
 
 export async function register(data: RegisterData) {
-    const {name, email, password} = data;
+    const {name, email, password, role = 'aluno'} = data;
 
     const existingUser = await findUserByEmail(email);
 
@@ -20,9 +21,10 @@ export async function register(data: RegisterData) {
     const hashPassword = await bcrypt.hash(password, 10);
 
     await createUser({
-        name, 
-        email, 
-        password: hashPassword
+        name,
+        email,
+        password: hashPassword,
+        role
     });
 }
 
@@ -41,7 +43,15 @@ export async function login(data: Omit<RegisterData, 'name'>) {
         throw new Error('Senha incorreta');
     }
 
-    const token = jwt.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET as string, { expiresIn: '1h' });
+    const token = jwt.sign(
+        {
+            userId: user.id,
+            email: user.email,
+            role: user.role
+        },
+        process.env.JWT_SECRET as string,
+        { expiresIn: '1h' }
+    );
 
-    return token; 
+    return token;
 }
