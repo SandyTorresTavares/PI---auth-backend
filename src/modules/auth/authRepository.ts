@@ -1,4 +1,4 @@
-import connection from "../database/connection";
+import connection from "../../database/connection";
 import { ResultSetHeader } from "mysql2";
 
 export async function findUserByEmail(email: string){

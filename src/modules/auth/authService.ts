@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import { findUserByEmail, createUser } from "../repositories/repository";
+import { findUserByEmail, createUser } from "./authRepository";
 
 interface RegisterData {
     name: string;
